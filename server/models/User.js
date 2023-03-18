@@ -15,23 +15,46 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
         min:2,
         unique: true
     },
+    mobileNo: {
+        type: String,
+        default: ""
+    },
     password: {
         type: String,
-        required: true,
         min: 5
     },
     picturePath: {
         type: String,
-        required: true,
+        required: false,
     },
     choices: {
         type: Array,
         default: [] 
+    },
+    commited: {
+        type: Boolean,
+        default: false
+    },
+    insta_id: {
+        type: String,
+        default: ""
+    },
+    snap_id: {
+        type: String,
+        default: ""
+    },
+    numberOfHits: {
+        type: String,
+        default: 0
+    },
+    isUser: {
+        type: Boolean,
+        default: true
     }
+
 }, {timestamps: true});
 
 const User = mongoose.model('User',UserSchema);
