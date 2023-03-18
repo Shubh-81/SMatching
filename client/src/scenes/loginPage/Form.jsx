@@ -16,6 +16,17 @@ import { setLogin } from "../../state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "../../components/FlexBetween";
 import { Co2Sharp } from "@mui/icons-material";
+// import {v2 as cloudinary} from 'cloudinary';
+
+// Configuration 
+// cloudinary.config({
+//   cloud_name: "dxgc9w5qh",
+//   api_key: "356593962626789",
+//   api_secret: "_Mv6ukm3ShSju7vBFNN9LEz_8AE"
+// });
+
+
+// Upload
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -57,16 +68,22 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
+  const [invalidCrendentials,setInvalidCredentials] = useState(false);
+  const [loading,setIsLoading] = useState(false);
 
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
+    setIsLoading(true);
     console.log("In register");
     console.log(values);
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    if(values.picture) formData.append("picturePath", values.picture.name);
+    console.log(values.picture);
+    if(values.picture) {
+        formData.append("picturePath", values.picture);
+    }
     if(!values.picture) formData.append("picturePath", "");
     if(!values.mobileNo) formData.append("mobileNo", "");
     if(!values.insta_id) formData.append("insta_id", "");
@@ -80,41 +97,55 @@ const Form = () => {
       }
     );
     console.log(savedUserResponse);
-    const savedUser = await savedUserResponse.json();
     onSubmitProps.resetForm();
 
-    if (savedUser) {
+    if (savedUserResponse) {
+      setIsLoading(false);
       setPageType("login");
     }
   };
 
   const login = async (values, onSubmitProps) => {
+    setIsLoading(true);
     const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
     const loggedIn = await loggedInResponse.json();
-    console.log(loggedIn);
     onSubmitProps.resetForm();
-    if (loggedIn) {
+    if (loggedIn.user) {
       dispatch(
         setLogin({
           user: loggedIn.user,
           token: loggedIn.token,
         })
       );
+      setIsLoading(false);
       navigate("/home");
+    } else {
+        setIsLoading(false);
+        setInvalidCredentials(true);
     }
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
-    console.log("Inside Form Submit");
     if (isLogin)  login(values, onSubmitProps);
     else register(values, onSubmitProps);
   };
 
   return (
+    <>
+    {invalidCrendentials&&
+        <Typography
+          sx={{
+            textDecoration: "none",
+            fontSize:"1rem",
+            color: palette.neutral.dark,
+          }}
+        >
+          "Invalid Credentials"
+        </Typography>}
     <Formik
       onSubmit={handleFormSubmit}
       initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -257,7 +288,7 @@ const Form = () => {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              {isLogin ? "LOGIN" : "REGISTER"}
+              {loading?"Loading....":isLogin ? "LOGIN" : "REGISTER"}
             </Button>
             <Typography
               onClick={() => {
@@ -277,10 +308,13 @@ const Form = () => {
                 ? "Don't have an account? Sign Up here."
                 : "Already have an account? Login here."}
             </Typography>
+            
+            
           </Box>
         </form>
       )}
     </Formik>
+    </>
   );
 };
 

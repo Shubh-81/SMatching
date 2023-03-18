@@ -27,9 +27,12 @@ export const authSlice = createSlice({
             }   else {
                 console.log("No Choices Yet");
             }
+        },
+        getChoices: (state) => {
+            return state.choices;
         }
     }
 });
 
-export const {setMode, setLogin, setLogout, setChoices } = authSlice.actions;
+export const {setMode, setLogin, setLogout, setChoices, getChoices } = authSlice.actions;
 export default authSlice.reducer;
