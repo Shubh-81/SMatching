@@ -74,21 +74,17 @@ const Form = () => {
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
     setIsLoading(true);
-    console.log("In register");
-    console.log(values);
     const formData = new FormData();
     for (let value in values) {
       formData.append(value, values[value]);
     }
-    console.log(values.picture);
     if(values.picture) {
         formData.append("picturePath", values.picture);
     }
     if(!values.picture) formData.append("picturePath", "");
     if(!values.mobileNo) formData.append("mobileNo", "");
     if(!values.insta_id) formData.append("insta_id", "");
-    console.log(formData);
-
+    
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
       {

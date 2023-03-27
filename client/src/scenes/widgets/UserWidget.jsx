@@ -32,9 +32,7 @@ const UserWidget = ({ userId, picturePath }) => {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log(response);
     const data = await response.json();
-    console.log(data);
     setUser(data);
   };
 
@@ -82,7 +80,7 @@ const UserWidget = ({ userId, picturePath }) => {
             >
               {firstName} {lastName}
             </Typography>
-            <Typography color={medium}>{choices.length} choices</Typography>
+            <Typography color={medium}> choices</Typography>
           </Box>
         </FlexBetween>
         <ManageAccountsOutlined />

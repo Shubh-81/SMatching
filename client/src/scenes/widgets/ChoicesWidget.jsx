@@ -1,14 +1,4 @@
-import {
-    ManageAccountsOutlined,
-    EditOutlined,
-    LocationOnOutlined,
-    WorkOutlineOutlined,
-    CallOutlined,
-  } from "@mui/icons-material";
-  import InstagramIcon from '@mui/icons-material/Instagram';
-  import MailOutlineIcon from '@mui/icons-material/MailOutline';
   import { Box, Typography, Divider, useTheme } from "@mui/material";
-  import UserImage from "../../components/UserImage";
   import FlexBetween from "../../components/FlexBetween";
   import WidgetWrapper from "../../components/WidgetWrapper";
   import { useSelector } from "react-redux";
@@ -18,60 +8,60 @@ import {
   
   const UserWidget = ({ userId, picturePath }) => {
     const [user, setUser] = useState(null);
+    const [choices,setChoices] = useState([])
     const { palette } = useTheme();
     const navigate = useNavigate();
     const token = useSelector((state) => state.token);
     const dark = palette.neutral.dark;
-    const medium = palette.neutral.medium;
-    const main = palette.neutral.main;
-    const dummyData = [
-      {
-        name: "Allison Brie"
-      },
-      {
-        name: "Alexandra Daddario"
-      }
-    ];
   
     const getUser = async () => {
       const response = await fetch(`http://localhost:3001/users/${userId}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(response);
       const data = await response.json();
-      console.log(data);
       setUser(data);
+    };
+
+    const getChoices = async () => {
+      const response = await fetch(`http://localhost:3001/users/${userId}/choices`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setChoices(data);
     };
   
     useEffect(() => {
+      getChoices();
       getUser();
     }, []); 
 
-    const handleChoiceRemoval = (choiceId) => {
-
+    const handleChoiceRemoval = async (choiceId) => {
+      try {
+        const response = await fetch(`http://localhost:3001/users/${userId}/${choiceId}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+        });
+        const res = await response.json()
+        console.log(res)
+        if(res.user) {
+          setChoices(res.user.choices);
+        }
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const handleAddChoice = () => {
-
+      navigate(`/addchoice/${userId}`)
     }
   
     if (!user) {
       return null;
     }
   
-  
-    const {
-      firstName,
-      lastName,
-      mobileNo,
-      email,
-      choices,
-      insta_id,
-      snap_id,
-      numberOfHits
-    } = user;
-  
+
     return (
       <WidgetWrapper>
         {/* FIRST ROW */}
@@ -98,16 +88,16 @@ import {
   
         {/* SECOND ROW */}
         {
-            dummyData.map((choice)=>{
+            choices.map((choice)=>{
                 return (
                     <>
                     <Box p="0.4rem 0">
                         <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
-                            <Typography width="30rem" color={dark} variant="h4">{choice.name}</Typography>
+                            <Typography width="30rem" color={dark} variant="h4">{choice.firstName} {choice.lastName}</Typography>
                             <Button
                                 type="submit"
                                 size="small"
-                                onClick={handleChoiceRemoval(choice.id)}
+                                onClick={()=>{handleChoiceRemoval(choice._id)}}
                                 sx={{
                                     m: "0.1rem 0",
                                     p: "1.2rem",

@@ -26,7 +26,7 @@ export const register = async (req,res) => {
             insta_id,
         });
         const savedUser = await newUser.save();
-        res.status(201).json();
+        res.status(201).json(savedUser);
     }   catch(err) {
         res.status(500).json({error: err.message}); 
     }

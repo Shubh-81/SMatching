@@ -16,7 +16,6 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         min:2,
-        unique: true
     },
     mobileNo: {
         type: String,
@@ -28,7 +27,6 @@ const UserSchema = new mongoose.Schema({
     },
     picturePath: {
         type: String,
-        required: false,
     },
     choices: {
         type: Array,
