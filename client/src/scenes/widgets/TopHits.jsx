@@ -3,31 +3,28 @@ import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import { useState } from "react";
 import { Box, Divider } from "@mui/material";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 
 const TopHits = () => {
   const { palette } = useTheme();
+  const [topTen,setTopTen] = useState([]);
   const dark = palette.neutral.dark;
-  const main = palette.neutral.main;
-  const medium = palette.neutral.medium;
-  const [topTen,setTopTen] = useState([
-    {
-        name: "Shubh Agarwal",
-        numberOfHits: 500
-    },
-    {
-        name: "Manav Parmar",
-        numberOfHits: 50
-    },
-    {
-        name: "Dhawal Kabra",
-        numberOfHits: 5
-    },
-    {
-        name: "Divyanshu Pandey",
-        numberOfHits: 1
-    }
-    ]);
+
+  const getTopHits = async () => {
+    const response = await fetch(`http://localhost:3001/topHits`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+    const data = await response.json();
+    setTopTen(data.topHits);
+  };
+
+  useEffect(()=>{
+    getTopHits();
+  },[])
+
 
   return (
     <WidgetWrapper>
@@ -46,7 +43,7 @@ const TopHits = () => {
                     <Box p="1rem 0">
                         <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
                         <Box flexBasis={  "40%"}>
-                            <Typography width="15rem" color={dark} variant="h6">{choice.name}</Typography>
+                            <Typography width="15rem" color={dark} variant="h6">{choice.firstName} {choice.lastName}</Typography>
                         </Box>
                         <Box flexBasis={  "16%"}>
                             <Typography  color={dark} variant="h6">{choice.numberOfHits}</Typography>

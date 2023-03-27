@@ -1,11 +1,10 @@
 import express from "express";
-import jwt from 'jsonwebtoken';
 import { verifyToken } from "../middleware/auth.js";
 import {
     getUser,
     getUserChoice,
     addRemoveChoice,
-    addChoice
+    addChoice,
 } from '../controllers/user.js';
 
 const router = express.Router();

@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import {register} from './controllers/auth.js';
 import userRoutes from './routes/user.js';
 import authRoutes from './routes/auth.js'; 
+import { getTopUser } from './controllers/user.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,8 +37,10 @@ const storage = multer.diskStorage({
 const upload = multer({storage});
 
 app.post('/auth/register',upload.single('picture'),register);
+app.get('/topHits',getTopUser);
 app.use('/auth',authRoutes);
 app.use('/users',userRoutes);
+
 
 const PORT = process.env.PORT || 6001;
 mongoose

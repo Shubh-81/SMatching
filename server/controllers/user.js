@@ -56,17 +56,16 @@ export const addChoice = async (req,res) => {
             if (insta_id!="") query.insta_id = insta_id;
             if (mobileNo!="") query.mobileNo = mobileNo;
             if (email!="") query.email = email;
-            console.log(query)
             const choice = await User.findOne(query);
             if(choice) {
                 if(user.choices.includes(choice._id)) {
-                    res.status(200).json(user); 
+                    res.status(200).json({message: "Choice already exsists"}); 
                 } else {
                     user.choices.push(choice._id) 
                     const updateVal = choice.numberOfHits + 1;
                     await choice.updateOne({numberOfHits: updateVal});
                     const savedU = await user.updateOne({choices: user.choices})
-                    res.status(200).json(savedU); 
+                    res.status(200).json({message: "Success"}); 
                 }
             }
             else {
@@ -82,9 +81,18 @@ export const addChoice = async (req,res) => {
                 const savedUser = await newUser.save();
                 user.choices.push(savedUser._id);
                 const savedU = await user.updateOne({choices: user.choices})
-                res.status(200).json(savedU); 
+                res.status(200).json({message: "Success"}); 
             }
         }
+    } catch (err) {
+        res.status(500).json({message: err});
+    }
+}
+
+export const getTopUser = async (req,res) => {
+    try {
+        const topTenHits = await User.find().sort({numberOfHits: -1}).limit(10);
+        res.status(200).json({topHits: topTenHits});
     } catch (err) {
         res.status(500).json({message: err});
     }

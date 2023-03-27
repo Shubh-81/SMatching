@@ -51,8 +51,8 @@ const Form = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const res = await response.json()
-      if(!res.message) {
+      const res = await response.json();
+      if(res.message) {
         navigate('/home')
       } else {
         setIsLoading(false)

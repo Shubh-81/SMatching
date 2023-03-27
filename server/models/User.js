@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema({
         default: ""
     },
     numberOfHits: {
-        type: String,
+        type: Number,
         default: 0
     },
     isUser: {
