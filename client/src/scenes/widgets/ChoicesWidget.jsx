@@ -5,6 +5,7 @@
   import { useEffect, useState } from "react";
   import { useNavigate } from "react-router-dom";
   import {Button} from '@mui/material'
+  import { Oval } from 'react-loader-spinner';
   
   const UserWidget = ({ userId, picturePath }) => {
     const [user, setUser] = useState(null);
@@ -44,9 +45,8 @@
           headers: { "Content-Type": "application/json" },
         });
         const res = await response.json()
-        console.log(res)
-        if(res.user) {
-          setChoices(res.user.choices);
+        if(res.userChoices) {
+          setChoices(res.userChoices);
         }
       } catch (err) {
         console.log(err);
@@ -56,12 +56,44 @@
     const handleAddChoice = () => {
       navigate(`/addchoice/${userId}`)
     }
-  
-    if (!user) {
-      return null;
-    }
-  
 
+    if (!user) {
+      return (
+    <WidgetWrapper>
+        <FlexBetween
+          gap="0.5rem"
+          pb="1.1rem"
+          onClick={() => navigate(`/profile/${userId}`)}
+        >
+          <FlexBetween gap="1rem">
+            <Box>
+              <Typography
+                variant="h2"
+                color={dark}
+                fontWeight="1000"
+                textAlign="center"
+              >
+                Your Choices
+              </Typography>
+            </Box>
+          </FlexBetween>
+          <Oval
+          height={80}
+          width={80}
+          color="#E6FBFF"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel='oval-loading'
+          secondaryColor="#001519"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        
+        />
+        </FlexBetween>
+        
+      </WidgetWrapper>)
+    }
     return (
       <WidgetWrapper>
         {/* FIRST ROW */}
@@ -85,8 +117,6 @@
         </FlexBetween>
   
         <Divider />
-  
-        {/* SECOND ROW */}
         {
             choices.map((choice)=>{
                 return (
@@ -131,9 +161,6 @@
             >
               Add Choice
         </Button>
-
-  
-
       </WidgetWrapper>
     );
   };

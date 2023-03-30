@@ -92,12 +92,15 @@ const Form = () => {
         body: formData,
       }
     );
-    console.log(savedUserResponse);
     onSubmitProps.resetForm();
-
-    if (savedUserResponse) {
+    const res = await savedUserResponse.json();
+    if (savedUserResponse.status==200) {
       setIsLoading(false);
       setPageType("login");
+    } 
+    else {
+      setIsLoading(false);
+      alert(res.message);
     }
   };
 
@@ -212,7 +215,7 @@ const Form = () => {
                   helperText={touched.mobileNo && errors.mobileNo}
                   sx={{ gridColumn: "span 4" }}
                 />
-                <Box
+                {/* <Box
                   gridColumn="span 4"
                   border={`1px solid ${palette.neutral.medium}`}
                   borderRadius="5px"
@@ -244,7 +247,7 @@ const Form = () => {
                       </Box>
                     )}
                   </Dropzone>
-                </Box>
+                </Box> */}
               </>
             )}
 

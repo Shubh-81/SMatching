@@ -5,11 +5,11 @@ import { useState } from "react";
 import { Box, Divider } from "@mui/material";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
-
+import { Oval } from 'react-loader-spinner';
 
 const TopHits = () => {
   const { palette } = useTheme();
-  const [topTen,setTopTen] = useState([]);
+  const [topTen,setTopTen] = useState(null);
   const dark = palette.neutral.dark;
 
   const getTopHits = async () => {
@@ -25,6 +25,31 @@ const TopHits = () => {
     getTopHits();
   },[])
 
+  if(!topTen) {
+    return (
+      <WidgetWrapper>
+       <Box p="0.1rem 0"></Box>
+      <FlexBetween>
+        <Typography color={dark} variant="h5" fontWeight="500">
+          Users with Top Hits This Week
+        </Typography>
+        <Oval
+          height={25}
+          width={25}
+          color="#E6FBFF"
+          wrapperStyle={{}}
+          wrapperClass=""
+          visible={true}
+          ariaLabel='oval-loading'
+          secondaryColor="#001519"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        
+        />
+      </FlexBetween>
+    </WidgetWrapper>
+    )
+  }
 
   return (
     <WidgetWrapper>

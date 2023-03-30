@@ -52,11 +52,12 @@ const Form = () => {
         body: JSON.stringify(values),
       });
       const res = await response.json();
-      if(res.message) {
+      onSubmitProps.resetForm();
+      if(res.message=="Success") {
         navigate('/home')
       } else {
         setIsLoading(false)
-        alert("Something Went Wrong Please Try Again")
+        alert(res.message);
       }
     } catch (err) {
       console.log(err);
