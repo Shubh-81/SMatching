@@ -7,26 +7,12 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../state";
-import Dropzone from "react-dropzone";
-import FlexBetween from "../../components/FlexBetween";
-import { Co2Sharp } from "@mui/icons-material";
-// import {v2 as cloudinary} from 'cloudinary';
-
-// Configuration 
-// cloudinary.config({
-//   cloud_name: "dxgc9w5qh",
-//   api_key: "356593962626789",
-//   api_secret: "_Mv6ukm3ShSju7vBFNN9LEz_8AE"
-// });
-
-
-// Upload
+import PasswordChecklist from "react-password-checklist"
 
 const registerSchema = yup.object().shape({
   firstName: yup.string().required("required"),
@@ -70,8 +56,15 @@ const Form = () => {
   const isRegister = pageType === "register";
   const [invalidCrendentials,setInvalidCredentials] = useState(false);
   const [loading,setIsLoading] = useState(false);
+  const [valid,setValid] = useState(false);
 
   const register = async (values, onSubmitProps) => {
+    if(!valid) {
+      setIsLoading(false);
+      alert("Invalid Password");
+      return;
+    }
+
     // this allows us to send form info with image
     setIsLoading(true);
     const formData = new FormData();
@@ -272,6 +265,15 @@ const Form = () => {
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
+            {!isLogin&&<PasswordChecklist
+				    rules={["minLength","specialChar","number","capital"]}
+				    minLength={5}
+            style={{width: "30rem"}}
+            iconSize={10}
+				    value={values.password}
+				    onChange={(isValid) => {setValid(isValid)}}
+			      />}
+            
           </Box>
 
           {/* BUTTONS */}
