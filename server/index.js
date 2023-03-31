@@ -12,6 +12,7 @@ import {register} from './controllers/auth.js';
 import userRoutes from './routes/user.js';
 import authRoutes from './routes/auth.js'; 
 import { getTopUser } from './controllers/user.js';
+import User from './models/User.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

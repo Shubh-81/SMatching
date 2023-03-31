@@ -128,16 +128,6 @@ const Form = () => {
 
   return (
     <>
-    {invalidCrendentials&&
-        <Typography
-          sx={{
-            textDecoration: "none",
-            fontSize:"1rem",
-            color: palette.neutral.dark,
-          }}
-        >
-          "Invalid Credentials"
-        </Typography>}
     <Formik
       onSubmit={handleFormSubmit}
       initialValues={isLogin ? initialValuesLogin : initialValuesRegister}
@@ -266,7 +256,7 @@ const Form = () => {
               sx={{ gridColumn: "span 4" }}
             />
             {!isLogin&&<PasswordChecklist
-				    rules={["minLength","specialChar","number","capital"]}
+				    rules={["minLength","number","capital"]}
 				    minLength={5}
             style={{width: "30rem"}}
             iconSize={10}
@@ -278,7 +268,19 @@ const Form = () => {
 
           {/* BUTTONS */}
           <Box>
-            <Button
+          {(invalidCrendentials&&isLogin)?<Button
+              fullWidth
+              type="submit"
+              sx={{
+                m: "2rem 0",
+                p: "1rem",
+                backgroundColor: "red",
+                color: "black",
+                "&:hover": { color: palette.primary.main },
+              }}
+            >
+              {loading?"Loading....":isLogin ? "INVALID CRENDENTIALS" : "REGISTER"}
+            </Button>:<Button
               fullWidth
               type="submit"
               sx={{
@@ -290,10 +292,11 @@ const Form = () => {
               }}
             >
               {loading?"Loading....":isLogin ? "LOGIN" : "REGISTER"}
-            </Button>
+            </Button>}
             <Typography
               onClick={() => {
                 setPageType(isLogin ? "register" : "login");
+                setInvalidCredentials(false);
                 resetForm();
               }}
               sx={{

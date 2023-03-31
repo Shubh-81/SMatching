@@ -13,15 +13,11 @@ export const register = async (req,res) => {
             picturePath,
             insta_id
         } = req.body;
-        const results = await User.find();
-        var foundUser;
-        results.map((user)=>{
-            if(user.email==email!="" || user.mobileNo==mobileNo!="" || user.insta_id==insta_id!="") {
-                foundUser = user;
-                return;
-            }
-        });
-        console.log(foundUser);
+        let query = []
+        if(email!='')   query.push({email: email});
+        if(mobileNo!='')    query.push({mobileNo: mobileNo});
+        if(insta_id!='')    query.push({insta_id: insta_id});
+        const foundUser = await User.findOne({$or: query});
         if(!foundUser) {
             const salt = await bcrpyt.genSalt();
             const passwordHash = await bcrpyt.hash(password,salt);
@@ -35,7 +31,7 @@ export const register = async (req,res) => {
                 insta_id,
             });
             const savedUser = await newUser.save();
-            res.status(201).json(savedUser);
+            res.status(200).json(savedUser);
         }
         else {
             if(foundUser.isUser) {
@@ -43,7 +39,7 @@ export const register = async (req,res) => {
             } else {
                 const salt = await bcrpyt.genSalt();
                 const passwordHash = await bcrpyt.hash(password,salt);
-                const saved = await foundUser.updateOne(
+                const saved = await foundUser[0].updateOne(
                     {
                         firstName: firstName,
                         lastName: lastName,
