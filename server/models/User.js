@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema({
         type: Array,
         default: [] 
     },
+    hits: {
+        type: Array,
+        default: []
+    },
     commited: {
         type: Boolean,
         default: false

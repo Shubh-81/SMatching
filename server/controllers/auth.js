@@ -17,7 +17,9 @@ export const register = async (req,res) => {
         if(email!='')   query.push({email: email});
         if(mobileNo!='')    query.push({mobileNo: mobileNo});
         if(insta_id!='')    query.push({insta_id: insta_id});
+        console.log(query);
         const foundUser = await User.findOne({$or: query});
+        console.log(foundUser);
         if(!foundUser) {
             const salt = await bcrpyt.genSalt();
             const passwordHash = await bcrpyt.hash(password,salt);
@@ -39,7 +41,7 @@ export const register = async (req,res) => {
             } else {
                 const salt = await bcrpyt.genSalt();
                 const passwordHash = await bcrpyt.hash(password,salt);
-                const saved = await foundUser[0].updateOne(
+                const saved = await foundUser.updateOne(
                     {
                         firstName: firstName,
                         lastName: lastName,
@@ -63,7 +65,7 @@ export const login = async (req,res) => {
         const {email, password} = req.body;
         const user = await User.findOne({email:email});
         if(!user)   return res.status(400).json({message: "User does not exsist"});
-        const isMatch = bcrpyt.compare(password,user.password);
+        const isMatch = await bcrpyt.compare(password,user.password);
         if(!isMatch)    return res.status(400).json({message: "Invalid Credentials"});
         const token = jwt.sign({id: user._id},process.env.JWT_SECRET);
         delete(user.password);

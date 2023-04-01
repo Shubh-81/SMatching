@@ -69,7 +69,7 @@ const Form = () => {
     setIsLoading(true);
     const formData = new FormData();
     for (let value in values) {
-      formData.append(value, values[value]);
+      formData.append(value, values[value].trim());
     }
     if(values.picture) {
         formData.append("picturePath", values.picture);
