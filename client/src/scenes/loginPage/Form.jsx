@@ -57,11 +57,12 @@ const Form = () => {
   const [invalidCrendentials,setInvalidCredentials] = useState(false);
   const [loading,setIsLoading] = useState(false);
   const [valid,setValid] = useState(false);
+  const [registerButtonMessage,setRegisterButtonMessage] = useState("");
 
   const register = async (values, onSubmitProps) => {
     if(!valid) {
       setIsLoading(false);
-      alert("Invalid Password");
+      registerButtonMessage("Invalid Password");
       return;
     }
 
@@ -93,7 +94,7 @@ const Form = () => {
     } 
     else {
       setIsLoading(false);
-      alert(res.message);
+      setRegisterButtonMessage(res.message);
     }
   };
 
@@ -122,6 +123,7 @@ const Form = () => {
   };
 
   const handleFormSubmit = async (values, onSubmitProps) => {
+    console.log("Here");
     if (isLogin)  login(values, onSubmitProps);
     else register(values, onSubmitProps);
   };
@@ -291,7 +293,7 @@ const Form = () => {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              {loading?"Loading....":isLogin ? "LOGIN" : "REGISTER"}
+              {loading?"Loading....":isLogin ? "LOGIN" : registerButtonMessage?registerButtonMessage:"REGISTER"}
             </Button>}
             <Typography
               onClick={() => {

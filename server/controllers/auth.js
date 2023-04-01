@@ -17,9 +17,7 @@ export const register = async (req,res) => {
         if(email!='')   query.push({email: email});
         if(mobileNo!='')    query.push({mobileNo: mobileNo});
         if(insta_id!='')    query.push({insta_id: insta_id});
-        console.log(query);
         const foundUser = await User.findOne({$or: query});
-        console.log(foundUser);
         if(!foundUser) {
             const salt = await bcrpyt.genSalt();
             const passwordHash = await bcrpyt.hash(password,salt);
