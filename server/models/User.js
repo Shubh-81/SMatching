@@ -55,6 +55,10 @@ const UserSchema = new mongoose.Schema({
     isUser: {
         type: Boolean,
         default: true
+    },
+    verified: {
+        type: Boolean,
+        default: false
     }
 
 }, {timestamps: true});

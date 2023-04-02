@@ -30,6 +30,10 @@ const loginSchema = yup.object().shape({
   password: yup.string().required("required"),
 });
 
+const otpSchema = yup.object().shape({
+  otp: yup.string().required("required")
+});
+
 const initialValuesRegister = {
   firstName: "",
   lastName: "",
@@ -46,6 +50,10 @@ const initialValuesLogin = {
   password: "",
 };
 
+const initialValuesOTP = {
+  otp: ""
+};
+
 const Form = () => {
   const [pageType, setPageType] = useState("login");
   const { palette } = useTheme();
@@ -58,6 +66,9 @@ const Form = () => {
   const [loading,setIsLoading] = useState(false);
   const [valid,setValid] = useState(false);
   const [registerButtonMessage,setRegisterButtonMessage] = useState("");
+  const [otp,setOTP] = useState("");
+  const [userId,setUserId] = useState("");
+  const [incorrectOTP,setIncorrectOTP] = useState(false);
 
   const register = async (values, onSubmitProps) => {
     if(!valid) {
@@ -65,8 +76,6 @@ const Form = () => {
       registerButtonMessage("Invalid Password");
       return;
     }
-
-    // this allows us to send form info with image
     setIsLoading(true);
     const formData = new FormData();
     for (let value in values) {
@@ -78,7 +87,6 @@ const Form = () => {
     if(!values.picture) formData.append("picturePath", "");
     if(!values.mobileNo) formData.append("mobileNo", "");
     if(!values.insta_id) formData.append("insta_id", "");
-    
     const savedUserResponse = await fetch(
       "http://localhost:3001/auth/register",
       {
@@ -86,8 +94,19 @@ const Form = () => {
         body: formData,
       }
     );
-    onSubmitProps.resetForm();
     const res = await savedUserResponse.json();
+    setUserId(res._id);
+    const checkOtp = await fetch(
+      "http://localhost:3001/auth/otpverify",{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values)
+      }
+    );
+    const res2 = await checkOtp.json();
+    console.log(res2.otp);
+    setOTP(res2.otp);
+    onSubmitProps.resetForm();
     if (savedUserResponse.status==200) {
       setIsLoading(false);
       setPageType("login");
@@ -122,11 +141,109 @@ const Form = () => {
     }
   };
 
+  const verifyUser = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/auth/${userId}/verifyUser`,{
+          method: "POST",
+        }
+      );
+      const res = await response.json();
+      setPageType("login");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const handleFormSubmit = async (values, onSubmitProps) => {
-    console.log("Here");
     if (isLogin)  login(values, onSubmitProps);
     else register(values, onSubmitProps);
   };
+
+  const handleOTPSubmit = async (values, onSubmitProps) => {
+    if(Number(values.otp)==Number(otp)) {
+      verifyUser();
+    } else {
+      setIncorrectOTP(true);
+    }
+  }
+
+  if(otp) {
+    return (
+      <>
+      <Formik
+        onSubmit={handleOTPSubmit}
+        initialValues={initialValuesOTP}
+        validationSchema={otpSchema}
+      >
+        {({
+          values,
+          errors,
+          touched,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          resetForm,
+        }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              display="grid"
+              gap="30px"
+              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
+              sx={{
+                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
+              }}
+            >
+              <TextField
+                label="OTP"
+                type="text"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.otp}
+                name="otp"
+                error={Boolean(touched.otp) && Boolean(errors.otp)}
+                helperText={touched.otp && errors.otp}
+                sx={{ gridColumn: "span 4" }}
+              />
+            </Box>
+            <Box>
+              <Button
+                  fullWidth
+                  type="submit"
+                  sx={{
+                    m: "2rem 0",
+                    p: "1rem",
+                    backgroundColor: palette.primary.main,
+                    color: palette.background.alt,
+                    "&:hover": { color: palette.primary.main },
+                  }}
+                >
+                  {incorrectOTP?"INCORRECT OTP":"ENTER OTP"}
+                </Button>
+                <Typography
+                onClick={() => {
+                  setPageType("register");
+                  setOTP("");
+                  resetForm();
+                }}
+                sx={{
+                  textDecoration: "underline",
+                  color: palette.primary.main,
+                  "&:hover": {
+                    cursor: "pointer",
+                    color: palette.primary.light,
+                  },
+                }}
+              >
+                Wrong Email? Try Again.
+              </Typography>
+            </Box>
+          </form>
+        )}
+      </Formik>
+      </>
+    );
+  }
 
   return (
     <>
@@ -142,7 +259,6 @@ const Form = () => {
         handleBlur,
         handleChange,
         handleSubmit,
-        setFieldValue,
         resetForm,
       }) => (
         <form onSubmit={handleSubmit}>
