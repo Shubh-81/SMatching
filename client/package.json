@@ -1,6 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
+  "homepage": "https://myusername.github.io",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.10.6",
@@ -51,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "gh-pages": "^5.0.0",
     "webpack": "^5.76.2"
   }
 }

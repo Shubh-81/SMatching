@@ -13,7 +13,7 @@ const TopHits = () => {
   const dark = palette.neutral.dark;
 
   const getTopHits = async () => {
-    const response = await fetch(`http://localhost:3001/topHits`, {
+    const response = await fetch(`https://smatching.onrender.com/topHits`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
