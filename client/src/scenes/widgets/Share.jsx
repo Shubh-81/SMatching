@@ -2,14 +2,18 @@ import { Typography, useTheme } from "@mui/material";
 import FlexBetween from "../../components/FlexBetween";
 import WidgetWrapper from "../../components/WidgetWrapper";
 import {Button} from '@mui/material'
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Share = () => {
   const { palette } = useTheme();
   const dark = palette.neutral.dark;
   const main = palette.neutral.main;
   const medium = palette.neutral.medium;
+  const [text,setText] = useState("Share")
   const handleShare = () => {
-
+    navigator.clipboard.writeText("Link")
+    setText("Link Copied to Clipboard")
   }
 
   return (
@@ -35,7 +39,7 @@ const Share = () => {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              Share
+              {text}
         </Button>
     </WidgetWrapper>
   );
