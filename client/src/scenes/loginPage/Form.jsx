@@ -149,7 +149,11 @@ const Form = () => {
         }
       );
       const res = await response.json();
-      setPageType("login");
+      console.log(res);
+      if(res) {
+        setPageType("login");
+        setOTP("")
+      }
     } catch (err) {
       console.log(err);
     }
