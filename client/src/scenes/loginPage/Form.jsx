@@ -88,7 +88,7 @@ const Form = () => {
     if(!values.mobileNo) formData.append("mobileNo", "");
     if(!values.insta_id) formData.append("insta_id", "");
     const savedUserResponse = await fetch(
-      "https://smatching.onrender.com/auth/register",
+      "http://localhost:3001/auth/register",
       {
         method: "POST",
         body: formData,
@@ -97,7 +97,7 @@ const Form = () => {
     const res = await savedUserResponse.json();
     setUserId(res._id);
     const checkOtp = await fetch(
-      "https://smatching.onrender.com/auth/otpverify",{
+      "http://localhost:3001/auth/otpverify",{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values)
@@ -119,7 +119,7 @@ const Form = () => {
 
   const login = async (values, onSubmitProps) => {
     setIsLoading(true);
-    const loggedInResponse = await fetch("https://smatching.onrender.com/auth/login", {
+    const loggedInResponse = await fetch("http://localhost:3001/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
@@ -144,7 +144,7 @@ const Form = () => {
   const verifyUser = async () => {
     try {
       const response = await fetch(
-        `https://smatching.onrender.com/auth/${userId}/verifyUser`,{
+        `http://localhost:3001/auth/${userId}/verifyUser`,{
           method: "POST",
         }
       );

@@ -46,7 +46,7 @@ const Form = () => {
     if(!values.insta_id) formData.append("insta_id", "");
     if(!values.email) formData.append("email", "");
     try {
-      const response = await fetch(`https://smatching.onrender.com/users/${userId}/addchoices`,{
+      const response = await fetch(`http://localhost:3001/users/${userId}/addchoices`,{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
