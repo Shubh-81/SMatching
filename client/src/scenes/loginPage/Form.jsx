@@ -95,25 +95,32 @@ const Form = () => {
       }
     );
     const res = await savedUserResponse.json();
-    setUserId(res._id);
-    const checkOtp = await fetch(
-      "http://localhost:3001/auth/otpverify",{
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values)
-      }
-    );
-    const res2 = await checkOtp.json();
-    console.log(res2.otp);
-    setOTP(res2.otp);
-    onSubmitProps.resetForm();
-    if (savedUserResponse.status==200) {
-      setIsLoading(false);
-      setPageType("login");
-    } 
-    else {
-      setIsLoading(false);
-      setRegisterButtonMessage(res.message);
+    console.log(res);
+    if(res._id) {
+        setUserId(res._id);
+        console.log(userId);
+        const checkOtp = await fetch(
+          "http://localhost:3001/auth/otpverify",{
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(values)
+          }
+        );
+        const res2 = await checkOtp.json();
+        console.log(res2.otp);
+        setOTP(res2.otp);
+        onSubmitProps.resetForm();
+        if (savedUserResponse.status==200) {
+          setIsLoading(false);
+          setPageType("login");
+        } 
+        else {
+          setIsLoading(false);
+          setRegisterButtonMessage(res.message);
+        }
+    } else {
+          setIsLoading(false);
+          setRegisterButtonMessage("User with one of unique entries already exsists");
     }
   };
 
@@ -434,8 +441,19 @@ const Form = () => {
                 ? "Don't have an account? Sign Up here."
                 : "Already have an account? Login here."}
             </Typography>
-            
-            
+            {isLogin&&<Typography
+              onClick={() => navigate(`/reset`)}
+              sx={{
+                textDecoration: "underline",
+                color: palette.primary.main,
+                "&:hover": {
+                  cursor: "pointer",
+                  color: palette.primary.light,
+                },
+              }}
+            >
+              Forgot Password.
+            </Typography>}
           </Box>
         </form>
       )}

@@ -51,7 +51,7 @@ export const register = async (req,res) => {
                         insta_id: insta_id,
                         isUser: true
                     });
-                res.status(200).json(saved);
+                res.status(200).json(foundUser);
             }
         }
     }   catch(err) {
