@@ -20,7 +20,7 @@
     const [loading,setLoading] = useState(false);
   
     const getUser = async () => {
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+      const response = await fetch(`https://smatching.onrender.com/users/${userId}`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -29,7 +29,7 @@
     };
 
     const getChoices = async () => {
-      const response = await fetch(`http://localhost:3001/users/${userId}/choices`, {
+      const response = await fetch(`https://smatching.onrender.com/users/${userId}/choices`, {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -44,7 +44,7 @@
 
     const handleChoiceRemoval = async (choiceId) => {
       try {
-        const response = await fetch(`http://localhost:3001/users/${userId}/${choiceId}`,{
+        const response = await fetch(`https://smatching.onrender.com/users/${userId}/${choiceId}`,{
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
         });
@@ -87,7 +87,7 @@
       });
         const formatedBody = {updatedChoices: formattedChoices}
         console.log(formatedBody);
-        const response = await fetch(`http://localhost:3001/users/${userId}/editchoices`,{
+        const response = await fetch(`https://smatching.onrender.com/users/${userId}/editchoices`,{
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formatedBody)

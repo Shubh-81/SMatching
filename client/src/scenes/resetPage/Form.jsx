@@ -29,37 +29,70 @@ const Form = () => {
   const [otp,setOTP] = useState("");
   const [userId,setUserId] = useState("");
   const [incorrectOTP,setIncorrectOTP] = useState(false);
+  const [loading,setLoading] = useState(false);
+  const [errorMessage,setErrorMessage] = useState("");
 
-  const verifyUser = async () => {
+  const verifyUser = async (values) => {
     try {
-      const response = await fetch(
-        `http://localhost:3001/auth/${userId}/verifyUser`,{
-          method: "POST",
+        const response2 = await fetch(
+            "https://smatching.onrender.com/users/useremail",{
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values)
+            }
+        );
+        const data = await response2.json();
+        if(data._id) {
+            setUserId(data._id);
+            let ud = data._id;
+            const response = await fetch(
+                `https://smatching.onrender.com/auth/${ud}/verifyUser`,{
+                method: "POST",
+                }
+            );
+            const res = await response.json();
+            console.log(res);
+            if(res) {
+                    setPageType("login");
+                    setOTP("")
+                }
+        } else {
+            setErrorMessage("Email Not Registered.");
         }
-      );
-      const res = await response.json();
-      console.log(res);
-      if(res) {
-        setPageType("login");
-        setOTP("")
-      }
-    } catch (err) {
-      console.log(err);
     }
+        catch (err) {
+            console.log(err);
+        }
+        
   }
 
-  const sendOTP = async () => {
+  const sendOTP = async (values, onSubmitProps) => {
     try {
+        const response = await fetch(
+            "https://smatching.onrender.com/auth/otpverify",{
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(values)
+            }
+        );
+        const res2 = await response.json();
+        console.log(res2.otp);
+        setOTP(res2.otp);
     } catch(err) {
         console.log(err)
     }
   }
 
   const handleOTPSubmit = async (values, onSubmitProps) => {
-    if(Number(otp)==Number(values.otp)) {
-        verifyUser();
-    } else {
-        sendOTP();
+    if(otp) {
+        if(Number(otp)==Number(values.otp)) {
+            verifyUser(values);
+        } else {
+            setIncorrectOTP(true);
+        }
+    }
+    else {
+        sendOTP(values);
     }
   }
 
@@ -125,23 +158,6 @@ const Form = () => {
                 >
                   {otp?(incorrectOTP?"INCORRECT OTP":"ENTER OTP"):("Generate OTP")}
                 </Button>
-                <Typography
-                onClick={() => {
-                  setPageType("register");
-                  setOTP("");
-                  resetForm();
-                }}
-                sx={{
-                  textDecoration: "underline",
-                  color: palette.primary.main,
-                  "&:hover": {
-                    cursor: "pointer",
-                    color: palette.primary.light,
-                  },
-                }}
-              >
-                Wrong Email? Try Again.
-              </Typography>
             </Box>
           </form>
         )}
