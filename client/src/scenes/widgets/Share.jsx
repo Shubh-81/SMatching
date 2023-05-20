@@ -12,7 +12,7 @@ const Share = () => {
   const medium = palette.neutral.medium;
   const [text,setText] = useState("Share")
   const handleShare = () => {
-    navigator.clipboard.writeText("Link")
+    navigator.clipboard.writeText("https://s-matching.vercel.app")
     setText("Link Copied to Clipboard")
   }
 
