@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/SMatching/static/css/main.dd3a1bc3.css",
+    "main.js": "/SMatching/static/js/main.56a56bf3.js",
+    "index.html": "/SMatching/index.html",
+    "main.dd3a1bc3.css.map": "/SMatching/static/css/main.dd3a1bc3.css.map",
+    "main.56a56bf3.js.map": "/SMatching/static/js/main.56a56bf3.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dd3a1bc3.css",
+    "static/js/main.56a56bf3.js"
+  ]
+}
