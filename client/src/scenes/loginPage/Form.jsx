@@ -182,6 +182,7 @@ const Form = () => {
   if(otp) {
     return (
       <>
+      
       <Formik
         onSubmit={handleOTPSubmit}
         initialValues={initialValuesOTP}
@@ -197,6 +198,8 @@ const Form = () => {
           resetForm,
         }) => (
           <form onSubmit={handleSubmit}>
+          
+              <Box gap="30px"/>
             <Box
               display="grid"
               gap="30px"
@@ -247,6 +250,13 @@ const Form = () => {
                 }}
               >
                 Wrong Email? Try Again.
+              </Typography>
+              <Typography
+                sx={{
+                  color: palette.primary.main,
+                }}
+              >
+                Check Spam Folder Also
               </Typography>
             </Box>
           </form>
