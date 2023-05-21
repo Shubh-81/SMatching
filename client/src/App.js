@@ -9,9 +9,7 @@ import { useSelector } from "react-redux";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { createTheme } from "@mui/material/styles";
 import { themeSettings } from "./theme";
-import { inject } from '@vercel/analytics';
- 
-inject();
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
   const mode = useSelector((state) => state.mode);
@@ -19,6 +17,7 @@ function App() {
   const isAuth = Boolean(useSelector((state) => state.token));
 
   return (
+    <>
     <div className="app">
       <BrowserRouter>
         <ThemeProvider theme={theme}>
@@ -45,6 +44,8 @@ function App() {
         </ThemeProvider>
       </BrowserRouter>
     </div>
+    <Analytics />
+    </>
   );
 }
 
