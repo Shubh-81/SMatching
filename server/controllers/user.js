@@ -75,7 +75,6 @@ export const addChoice = async (req,res) => {
             if (mobileNo!="") query.push({mobileNo: mobileNo});
             if (email!="") query.push({email: email})
             const choice = await User.findOne({$or: query});
-            console.log(choice);
             if(choice) {
                 if(user.choices.includes(choice._id)) {
                     res.status(200).json({message: "Choice already exsists"}); 
@@ -124,10 +123,7 @@ export const editChoice = async (req,res) => {
     try {
         const userId =  req.params.id;
         const {updatedChoices} = req.body;
-        console.log(userId);
         const user = await User.findById(userId);
-        console.log(userId);
-        console.log(user.choices);
         if(!user)   return res.status(404).json({message: "User does not exsist"});
         else {
             user.choices = updatedChoices;
@@ -143,7 +139,6 @@ export const resetPassword = async (req,res) => {
     try {
         const {userId} = req.body;
         const {password} = req.body;
-        console.log(password);
         const user = await User.findById(userId);
         if(!user)   return res.status(404).json({message: "User does not exsist"});
         else {

@@ -95,10 +95,8 @@ const Form = () => {
       }
     );
     const res = await savedUserResponse.json();
-    console.log(res);
     if(res._id) {
         setUserId(res._id);
-        console.log(userId);
         const checkOtp = await fetch(
           "https://smatching.onrender.com/auth/otpverify",{
             method: "POST",
@@ -107,7 +105,6 @@ const Form = () => {
           }
         );
         const res2 = await checkOtp.json();
-        console.log(res2.otp);
         setOTP(res2.otp);
         onSubmitProps.resetForm();
         if (savedUserResponse.status==200) {
@@ -156,7 +153,6 @@ const Form = () => {
         }
       );
       const res = await response.json();
-      console.log(res);
       if(res) {
         setPageType("login");
         setOTP("")

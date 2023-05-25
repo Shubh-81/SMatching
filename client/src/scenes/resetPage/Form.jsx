@@ -86,7 +86,6 @@ const Form = () => {
             }
         );
         const res2 = await response.json();
-        console.log(res2.otp);
         setOTP(res2.otp);
         setLoading(false);
     } catch(err) {
@@ -123,7 +122,6 @@ const Form = () => {
         }
     );
     const res = await response.json();
-    console.log(res);
     if(res.message) {
       setLoading(false);
       if(res.message=='Success') {

@@ -86,14 +86,12 @@
           return {_id};
       });
         const formatedBody = {updatedChoices: formattedChoices}
-        console.log(formatedBody);
         const response = await fetch(`https://smatching.onrender.com/users/${userId}/editchoices`,{
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formatedBody)
         })
         const r = await response.json();
-        console.log(r);
         setLoading(false);
         setEdit(false);
       } catch (err) {
