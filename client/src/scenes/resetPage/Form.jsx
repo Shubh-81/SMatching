@@ -24,8 +24,8 @@ const resetSchema = yup.object().shape({
 });
 
 const initialValuesReset = {
-  password: "",
-  confirm_password: ""
+  password: "password",
+  confirm_password: "password"
 };
 
 const initialValuesOTP = {
@@ -49,6 +49,9 @@ const Form = () => {
   const [isValid,setValid] = useState(true);
   const navigate = useNavigate();
   const [isLogin,setIsLogin] = useState(false);
+  const [password, setPassword] = useState("")
+	const [passwordAgain, setPasswordAgain] = useState("")
+
 
   const verifyUser = async (values) => {
     try {
@@ -194,6 +197,16 @@ const Form = () => {
               helperText={touched.password && errors.password}
               sx={{ gridColumn: "span 4" }}
             />
+            {values.password&&values.confirm_password&&<PasswordChecklist
+				    rules={["minLength","number","capital"]}
+				    minLength={5}
+            style={{width: "30rem"}}
+            iconSize={10}
+				    value={values.password}
+            valueAgain={values.confirm_password}
+				    onChange={(isValid) => {setValid(isValid)}}
+			      />}
+            
             
               {/* <PasswordChecklist
 				    rules={["minLength","number","capital"]}
