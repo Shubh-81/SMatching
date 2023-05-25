@@ -120,3 +120,4 @@ export const verifyUser = async (req,res) => {
         console.log(err);
     }
 }
+
