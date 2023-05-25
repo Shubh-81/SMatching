@@ -48,6 +48,7 @@ const Form = () => {
   const [resetError,setResetError] = useState("");
   const [isValid,setValid] = useState(true);
   const navigate = useNavigate();
+  const [isLogin,setIsLogin] = useState(false);
 
   const verifyUser = async (values) => {
     try {
@@ -172,27 +173,28 @@ const Form = () => {
               }}
             >
              <TextField
-                label="Password"
-                type="text"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.password}
-                name="password"
-                error={Boolean(touched.otp) && Boolean(errors.otp)}
-                helperText={touched.otp && errors.otp}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                label="Confirm Password"
-                type="text"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.confirm_password}
-                name="confirm_password"
-                error={Boolean(touched.otp) && Boolean(errors.otp)}
-                helperText={touched.otp && errors.otp}
-                sx={{ gridColumn: "span 4" }}
-              />
+              label="Password"
+              type="password"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.password}
+              name="password"
+              error={Boolean(touched.password) && Boolean(errors.password)}
+              helperText={touched.password && errors.password}
+              sx={{ gridColumn: "span 4" }}
+            />
+            <TextField
+              label="Confirm Password"
+              type="password"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.confirm_password}
+              name="confirm_password"
+              error={Boolean(touched.password) && Boolean(errors.password)}
+              helperText={touched.password && errors.password}
+              sx={{ gridColumn: "span 4" }}
+            />
+            
               {/* <PasswordChecklist
 				    rules={["minLength","number","capital"]}
 				    minLength={5}
