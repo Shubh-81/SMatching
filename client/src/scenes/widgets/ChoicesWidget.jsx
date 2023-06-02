@@ -1,86 +1,140 @@
-  import { Box, Typography, Divider,TextField,  useMediaQuery, useTheme } from "@mui/material";
+  import { Box, Typography, Divider, useTheme } from "@mui/material";
   import FlexBetween from "../../components/FlexBetween";
   import WidgetWrapper from "../../components/WidgetWrapper";
+  import { useSelector } from "react-redux";
   import { useEffect, useState } from "react";
   import { useNavigate } from "react-router-dom";
   import {Button} from '@mui/material'
+  import { Oval } from 'react-loader-spinner';
   import EditIcon from '@mui/icons-material/Edit';
-  import { Formik } from "formik";
-  import * as yup from "yup";
-
-const registerSchema = yup.object().shape({
-  title: yup.string().required("required"),
-  description: yup.string().required("required"),
-});
-
-const initialValuesRegister = {
-  title: "",
-  description: ""
-};
+  import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
   
   const UserWidget = ({ userId, picturePath }) => {
+    const [user, setUser] = useState(null);
     const [choices,setChoices] = useState([])
     const { palette } = useTheme();
     const navigate = useNavigate();
+    const token = useSelector((state) => state.token);
     const dark = palette.neutral.dark;
-    const light = palette.neutral.main;
     const [edit,setEdit] = useState(false);
-    const isNonMobile = true;
     const [loading,setLoading] = useState(false);
-    const handleFormSubmit = async (values, onSubmitProps) => {
-      
+  
+    const getUser = async () => {
+      const response = await fetch(`https://smatching.onrender.com/users/${userId}`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setUser(data);
     };
-    
-    const getTask = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/users/gettasks",
-        {
-          method: "GET"
-        });
-        console.log(response)
-        const res = await response.json();
-        console.log(res);
-        setChoices(res);
-      } catch(err) {
-        console.log(err);
-      }
-    }
+
+    const getChoices = async () => {
+      const response = await fetch(`https://smatching.onrender.com/users/${userId}/choices`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setChoices(data);
+    };
   
     useEffect(() => {
-      getTask();
+      getChoices();
+      getUser();
     }, []); 
 
     const handleChoiceRemoval = async (choiceId) => {
       try {
-        const val = {
-          taskId: choiceId
-        }
-        const response = await fetch("http://localhost:3001/users/deletetask",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(val)
+        const response = await fetch(`https://smatching.onrender.com/users/${userId}/${choiceId}`,{
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
         });
-        const res = await response.json();
-        console.log(res);
-        getTask();
-        
-      } catch(err) {
+        const res = await response.json()
+        if(res.userChoices) {
+          setChoices(res.userChoices);
+        }
+      } catch (err) {
         console.log(err);
       }
     }
 
     const handleAddChoice = () => {
-      navigate('/addtask');
+      navigate(`/addchoice/${userId}`)
     }
 
-    const handleEditChoice =  () => {
-      setEdit(false);
+    const handleDragStart = (event,currentIndex) => {
+      event.dataTransfer.setData('currentIndex', currentIndex);
     }
 
+    const handleDragEnter = (event,targetIndex) => {
+      event.preventDefault();
+      const currentIndex = Number(event.dataTransfer.getData('currentIndex'));
+      if (currentIndex !== targetIndex) {
+        const newList = [...choices];
+        const temp = newList[targetIndex];
+        newList[targetIndex] = newList[currentIndex];
+        newList[currentIndex] = temp;
 
+        setChoices(newList);
+        event.dataTransfer.setData('currentIndex', targetIndex);
+      }
+    }
+
+    const handleEditChoice = async () => {
+      try {
+        setLoading(true);
+        const formattedChoices = choices.map(({_id})=>{
+          return {_id};
+      });
+        const formatedBody = {updatedChoices: formattedChoices}
+        const response = await fetch(`https://smatching.onrender.com/users/${userId}/editchoices`,{
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formatedBody)
+        })
+        const r = await response.json();
+        setLoading(false);
+        setEdit(false);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    if (!user) {
+      return (
+    <WidgetWrapper>
+        <FlexBetween
+          gap="0.5rem"
+          pb="1.1rem"
+          onClick={() => navigate(`/profile/${userId}`)}
+        >
+          <FlexBetween gap="1rem">
+            <Box>
+              <Typography
+                variant="h2"
+                color={dark}
+                fontWeight="1000"
+                textAlign="center"
+              >
+                Your Choices
+              </Typography>
+            </Box>
+          </FlexBetween>
+          <Oval
+            height={80}
+            width={80}
+            color="#E6FBFF"
+            wrapperStyle={{}}
+            wrapperClass=""
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#001519"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+          
+          />
+        </FlexBetween> 
+      </WidgetWrapper>)
+    }
 
     if(edit) {
       return (
@@ -89,6 +143,7 @@ const initialValuesRegister = {
           <FlexBetween
             gap="0.5rem"
             pb="1.1rem"
+            onClick={() => navigate(`/profile/${userId}`)}
           >
             <FlexBetween gap="1rem">
               <Box>
@@ -98,7 +153,7 @@ const initialValuesRegister = {
                   fontWeight="1000"
                   textAlign="center"
                 >
-                  Your Tasks
+                  Your Choices
                 </Typography>
               </Box>
               
@@ -106,84 +161,18 @@ const initialValuesRegister = {
           </FlexBetween>
     
           <Divider />
-          <Formik
-      onSubmit={handleFormSubmit}
-      initialValues={initialValuesRegister}
-      validationSchema={registerSchema}
-    >
-      {({
-        values,
-        errors,
-        touched,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        setFieldValue,
-        resetForm,
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <Box
-            display="grid"
-            gap="30px"
-            gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-            sx={{
-              "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-            }}
-          >
-                <TextField
-                  label="Title"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.title}
-                  name="title"
-                  error={
-                    Boolean(touched.firstName) && Boolean(errors.firstName)
-                  }
-                  helperText={touched.firstName && errors.firstName}
-                  sx={{ gridColumn: "span 2" }}
-                />
-                <TextField
-                  label="Description"
-                  onBlur={handleBlur}
-                  onChange={handleChange}
-                  value={values.description}
-                  name="description"
-                  error={Boolean(touched.lastName) && Boolean(errors.lastName)}
-                  helperText={touched.lastName && errors.lastName}
-                  sx={{ gridColumn: "span 2" }}
-                />
-          </Box>
-          <Box>
-            <Button
-              fullWidth
-              type="submit"
-              sx={{
-                m: "2rem 0",
-                p: "1rem",
-                backgroundColor: palette.primary.main,
-                color: palette.background.alt,
-                "&:hover": { color: palette.primary.main },
-              }}
-            >
-              {loading?"Loading....":"ADD TASK"}
-            </Button>
-          </Box>
-        </form>
-      )}
-    </Formik>
-          {/* {
+          {
               choices.map((choice,index)=>{
                   return (
                       <li 
+                      draggable
+                      onDragStart={(event) => handleDragStart(event, index)}
+                      onDragEnter={(event) => handleDragEnter(event, index)}
                       style={{listStyleType: "none"}}>
                       <Box p="0.4rem 0">
                           <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
-                          <FlexBetween>
-                          <Typography width="5rem" color={dark} variant="h4">{choice.title}</Typography>
-                              <Divider />
-                              <Typography width="30rem" color={light} variant="h6">{choice.description}</Typography>
-                          </FlexBetween>
-                              
+                              <DragIndicatorIcon/>
+                              <Typography width="30rem" color={dark} variant="h4">{choice.firstName} {choice.lastName}</Typography>
                               <Button
                                   type="submit"
                                   size="small"
@@ -200,12 +189,13 @@ const initialValuesRegister = {
                                   >---
                               </Button>
                           </Box>
+                          
                       </Box>
                       <Divider />
                   </li>
                   )
               })
-          } */}
+          }
           <Button
                 fullWidth
                 type="submit"
@@ -239,12 +229,8 @@ const initialValuesRegister = {
                 fontWeight="1000"
                 textAlign="center"
               >
-                Your Tasks
+                Your Choices
               </Typography>
-                        <Typography width="10rem" color={dark} variant="h4">Title</Typography>
-                         <Typography width="30rem" color={light} variant="h4">Description</Typography>
-                            
-
             </Box>
             
           </FlexBetween>
@@ -257,9 +243,9 @@ const initialValuesRegister = {
                 return (
                     <>
                     <Box p="1.5rem 0">
-                        <Typography width="10rem" color={dark} variant="h4">{choice.title}</Typography>
-                         <Typography width="30rem" color={light} variant="h4">{choice.description}</Typography>
-                            
+                        <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
+                            <Typography width="30rem" color={dark} variant="h4">{choice.firstName} {choice.lastName}</Typography>
+                        </Box>
                     </Box>
                     <Divider />
                 </>
@@ -278,7 +264,7 @@ const initialValuesRegister = {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              Add Task
+              Add Choice
         </Button>
       </WidgetWrapper>
     );

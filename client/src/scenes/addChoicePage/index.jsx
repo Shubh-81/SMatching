@@ -17,7 +17,7 @@ const ChoicePage = () => {
             backgroundColor={theme.palette.background.alt}
         >
             <Typography fontWeight="500" variant="h5" sx={{ mb: "1.5rem" }}>
-            Add Task
+            Add you choices here by entering their name and one or more of the other feilds.
             </Typography>
             <Form />
         </Box>

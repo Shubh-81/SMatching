@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -9,34 +8,59 @@ import {
 } from "@mui/material";
 import { Formik } from "formik";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const registerSchema = yup.object().shape({
-  title: yup.string().required("required"),
-  description: yup.string().required("required"),
+  firstName: yup.string().required("required"),
+  lastName: yup.string().required("required"),
+  email: yup.string().email("invalid email"),
+  mobileNo: yup.string(),
+  insta_id: yup.string(),
 });
 
 const initialValuesRegister = {
-  title: "",
-  description: ""
+  firstName: "",
+  lastName: "",
+  email: "",
+  mobileNo: "",
+  insta_id: "",
 };
+
 
 const Form = () => {
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const [loading,setIsLoading] = useState(false);
+  const {_id} = useSelector((state)=>state.user);
+  const userId = _id;
   const navigate = useNavigate();
 
   const handleFormSubmit = async (values, onSubmitProps) => {
     setIsLoading(true);
-    const response = await fetch('http://localhost:3001/users/addtask',{
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
-    });
-    const res = await response.json();
-    if(!res.message) {
-      setIsLoading(false);
-      navigate('/');
+    const formData = new FormData();
+    for (let value in values) {
+      formData.append(value, values[value]);
+    }
+    if(!values.mobileNo) formData.append("mobileNo", "");
+    if(!values.insta_id) formData.append("insta_id", "");
+    if(!values.email) formData.append("email", "");
+    try {
+      const response = await fetch(`https://smatching.onrender.com/users/${userId}/addchoices`,{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const res = await response.json();
+      onSubmitProps.resetForm();
+      if(res.message=="Success") {
+        navigate('/home')
+      } else {
+        setIsLoading(false)
+        alert(res.message);
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -67,11 +91,11 @@ const Form = () => {
             }}
           >
                 <TextField
-                  label="Title"
+                  label="First Name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.title}
-                  name="title"
+                  value={values.firstName}
+                  name="firstName"
                   error={
                     Boolean(touched.firstName) && Boolean(errors.firstName)
                   }
@@ -79,14 +103,46 @@ const Form = () => {
                   sx={{ gridColumn: "span 2" }}
                 />
                 <TextField
-                  label="Description"
+                  label="Last Name"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  value={values.description}
-                  name="description"
+                  value={values.lastName}
+                  name="lastName"
                   error={Boolean(touched.lastName) && Boolean(errors.lastName)}
                   helperText={touched.lastName && errors.lastName}
                   sx={{ gridColumn: "span 2" }}
+                />
+                <TextField
+                  label="Instagram Id"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.insta_id}
+                  name="insta_id"
+                  error={Boolean(touched.insta_id) && Boolean(errors.insta_id)}
+                  helperText={touched.insta_id && errors.insta_id}
+                  sx={{ gridColumn: "span 4" }}
+                />
+                <TextField
+                  label="Mobile Number"
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  value={values.mobileNo}
+                  name="mobileNo"
+                  error={
+                    Boolean(touched.mobileNo) && Boolean(errors.mobileNo)
+                  }
+                  helperText={touched.mobileNo && errors.mobileNo}
+                  sx={{ gridColumn: "span 4" }}
+                />
+                <TextField
+                label="Email"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.email}
+                name="email"
+                error={Boolean(touched.email) && Boolean(errors.email)}
+                helperText={touched.email && errors.email}
+                sx={{ gridColumn: "span 4" }}
                 />
           </Box>
           <Box>
@@ -101,7 +157,7 @@ const Form = () => {
                 "&:hover": { color: palette.primary.main },
               }}
             >
-              {loading?"Loading....":"ADD TASK"}
+              {loading?"Loading....":"ADD CHOICE"}
             </Button>
           </Box>
         </form>
